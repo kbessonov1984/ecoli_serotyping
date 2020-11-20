@@ -1,8 +1,8 @@
 [![Master branch build status](https://api.travis-ci.org/phac-nml/ecoli_serotyping.svg?branch=master "Master Build Status")](https://travis-ci.org/phac-nml/ecoli_serotyping)
 
 # ECTyper (an easy typer)
-**ectyper** is a standalone versatile serotyping module for _Escherichia coli_. It supports both _fasta_ (assembled) and _fastq_ (raw reads) file formats.
-The tool provides convenient species identification coupled to quality control module giving a complete, transparent and reference laboratories suitable report on E.coli serotpying.
+`ECTyper` is a standalone versatile serotyping module for _Escherichia coli_. It supports both _fasta_ (assembled) and _fastq_ (raw reads) file formats.
+The tool provides convenient species identification coupled to quality control module giving a complete, transparent and reference laboratories suitable report on E.coli serotyping.
 
 
 # Dependencies:
@@ -90,8 +90,8 @@ optional arguments:
                         Data/ectyper_database.json for more information
 ```
 
-# Fine tunning parameters
-ECTyper requires minimum options to run (`-i` and `-o`) but allows for extensive configuration to accomodate wide variaty of typing scenarios
+# Fine-tunning parameters
+`ECTyper` requires minimum options to run (`-i` and `-o`) but allows for extensive configuration to accomodate wide variaty of typing scenarios
 
 | Parameter|      Explanation                                                 | Usage scenario                                                                    |
 |----------|:----------------------------------------------------------------:|:----------------------------------------------------------------------------------:
@@ -110,25 +110,56 @@ These codes allow to quickly filter "reportable" and "non-reportable" samples. T
 For each reference allele minimum `%identity` and `%coverage` values were determined as a function of potential "cross-talk" between antigens (i.e. multiple potential antigen calls at a given setting).
 The QC module covers the following serotyping scenarios. More scenarios might be added in future versions depending on user needs.
 
-| QC flag          |      Explanation                                                 | 
+| QC flag          |      Explanation                                          | 
 |------------------|:-----------------------------------------------------------------|
 |PASS (REPORTABLE) |Both O and H antigen alleles meet min `%identity` or `%coverage` thresholds (ensuring no antigen cross-talk) and single antigen predicted for O and H|
 |FAIL (-:- TYPING) |Sample is E.coli and O and H antigens are not typed. Serotype:  -:- |
 |WARNING MIXED O-TYPE|A mixed O antigen call is predicted requiring wet-lab confirmation |
-|WARNING (WRONG SPECIES)| Sample is non-E.coli (e.g. E.albertii, Shigella, etc.) based on RefSeq assemblies|
-|WARNING (-:H TYPING)| Sample is E.coli and O antigen is not predicted (e.g. -:H18)|
-|WARNING (O:- TYPING)| Sample is E.coli and O antigen is not predicted (e.g. O17:-)|
+|WARNING (WRONG SPECIES)| A sample is non-E.coli (e.g. E.albertii, Shigella, etc.) based on RefSeq assemblies|
+|WARNING (-:H TYPING)| A sample is E.coli and O antigen is not predicted (e.g. -:H18)|
+|WARNING (O:- TYPING)| A sample is E.coli and O antigen is not predicted (e.g. O17:-)|
 |WARNING (O NON-REPORT)|O antigen alleles do not meet min %identity or %coverage thresholds|
 |WARNING (H NON-REPORT)|H antigen alleles do not meet min %id or %cov thresholds|
 |WARNING (O and H NON-REPORT)| Both O and H antigen alleles do not meet min %identity or %coverage thresholds|
-
-
  
+# Report format
+`ECTyper` capitalizes on a concise minimum output coupled to easy results interpretation and reporting. `ECTyper v1.0` serotyping results are available in a tab-delimited `output.tsv` file consisting of the 16 columns listed below:
+
+1. **Name**: Sample name (usually a unique identifier) 
+2. **Species**: the species column provides valuable species identification information in case of inadvertent sample contamination or mislabelling events
+3. **O-type**: O antigen
+4. **H-type**: H antigen
+5. **Serotype**: Predicted O and H antigen(s)
+6. **QC**: One of the 9 the Quality Control classification values summarizing overall quality and reliability of prediction
+7. **Evidence**: How many alleles in total used to call O and H antigens
+8. **GeneScores**: ECTyper O and H antigen, gene scores ranging from 0 to 1, represented by the selected alleles listed in the next column
+9. **AllelesKeys**: Best matching `ECTyper` database allele keys used to call a given serotype  
+10. **GeneIdentities(%)**: `%indentity` values of the input alleles
+11. **GeneCoverages(%)**: `%coverage` values of the input alleles
+12. **GeneContigNames**: the contig names where the input alleles are found
+13. **GeneRanges**: genomic coordinate ranges of the input alleles
+14. **GeneLengths**: the input allele length values 
+15. **Database**: database release version and date
+16. **Warnings**: any additional warnings linked to quality control status or any other error messages. 
+
+
+Selected columns from the `ECTyper` typical report are shown below. 
+
+|Name|Species|Serotype|QC |GeneScores|AlleleKeys|
+|------|:------|:-------|:--|:---------|:------------|
+|15-520|Escherichia coli|O174:H21|PASS (REPORTABLE)|wzx:1; wzy:1; fliC:1;|O104-5-wzx-origin;O104-13-wzy;H7-6-fliC-origin;|
+EC20151709|Escherichia coli|O157:H43|PASS (REPORTABLE)|wzx:1;wzy:0.999;fliC:1|O157-5-wzx-origin;O157-9-wzy-origin;H43-1-fliC-origin;|
+
+
 
 
 # Availability
-1. Terminal: Source code from this repository
-1. Terminal: Conda package available from BioConda channel at [https://anaconda.org/bioconda/ectyper](https://anaconda.org/bioconda/ectyper)
-1. Terminal: Docker/Singularity images (coming soon) 
-1. Web-based: Galaxy wrapper available for installation from [Galaxy ToolShed](https://toolshed.g2.bx.psu.edu/view/nml/ectyper/)
-1. Web-based: IRIDA plug-in available from [https://github.com/phac-nml/irida-plugin-ectyper](https://github.com/phac-nml/irida-plugin-ectyper)
+
+|Resource|Description|Type|
+|--------|:----------|:---|
+|[Conda](https://anaconda.org/bioconda/ectyper)   |package available from BioConda channel|Terminal|
+|Docker/Singularity| Images containing completely initialized ECTyper with all dependencies (coming shortly) | Terminal|
+|[GitHub](https://github.com/phac-nml/ecoli_serotyping) | Install source code as any Python package| Terminal|
+|[Galaxy ToolShed](https://toolshed.g2.bx.psu.edu/view/nml/ectyper/)| Galaxy wrapper available for installation| Web-based|
+|[IRIDA plugin](https://github.com/phac-nml/irida-plugin-ectyper)| IRIDA instances could easily install additional pipeline | Web-based|
+
